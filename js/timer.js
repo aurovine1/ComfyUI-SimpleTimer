@@ -8,19 +8,30 @@ app.registerExtension({
     setup() {
         // Create the UI element
         const timerDisplay = document.createElement("div");
-        timerDisplay.style.padding = "8px";
-        timerDisplay.style.margin = "4px 0";
-        timerDisplay.style.backgroundColor = "#222";
+        timerDisplay.style.padding = "8px 12px";
+        timerDisplay.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
         timerDisplay.style.color = "#0f0";
         timerDisplay.style.textAlign = "center";
         timerDisplay.style.borderRadius = "4px";
         timerDisplay.style.fontFamily = "monospace";
+        timerDisplay.style.fontSize = "14px";
+        timerDisplay.style.zIndex = "9999"; // Ensure it sits above other UI elements
         timerDisplay.innerText = "Ready: 0.00s";
         
-        // Append it to the main ComfyUI menu panel
-        const menu = document.querySelector(".comfy-menu");
-        if (menu) {
-            menu.prepend(timerDisplay);
+        // Try to find the old menu first
+        const oldMenu = document.querySelector(".comfy-menu");
+        
+        if (oldMenu) {
+            // If on the old UI, attach it there
+            timerDisplay.style.margin = "4px 0";
+            oldMenu.prepend(timerDisplay);
+        } else {
+            // If on the NEW UI (v1), make it a floating widget at the bottom right
+            timerDisplay.style.position = "fixed";
+            timerDisplay.style.bottom = "20px";
+            timerDisplay.style.right = "20px";
+            timerDisplay.style.border = "1px solid #333";
+            document.body.appendChild(timerDisplay);
         }
 
         // Listen for when the queue starts
