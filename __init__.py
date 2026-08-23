@@ -1,28 +1,44 @@
 import time
 
 # 1. Define a basic backend class so ComfyUI knows the node exists
+import time
+
 class SimpleTimerNode:
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                # You can add inputs here later if needed
+                # Forces the timer to wait for the sampler to finish
+                "latent_in": ("LATENT",), 
             },
         }
 
-    # What the node outputs (e.g., a time value)
-    RETURN_TYPES = ("FLOAT", "STRING")
-    RETURN_NAMES = ("time_float", "time_string")
+    # Added LATENT to the outputs so it can act as a bridge
+    RETURN_TYPES = ("LATENT", "FLOAT", "STRING")
+    RETURN_NAMES = ("latent_passthrough", "time_float", "time_string")
     
     FUNCTION = "get_time"
-    
-    # This determines where it appears in the right-click menu
     CATEGORY = "utils"
 
-    def get_time(self):
-        # A basic backend execution: returns the current time
+    def get_time(self, latent_in):
+        # 1. Grab the exact time the latent arrived
         current_time = time.time()
-        return (current_time, str(current_time))
+        
+        # 2. Pass the latent through untouched, along with the timestamps
+        return (latent_in, current_time, str(current_time))
+
+
+NODE_CLASS_MAPPINGS = {
+    "SimpleTimer": SimpleTimerNode
+}
+
+NODE_DISPLAY_NAME_MAPPINGS = {
+    "SimpleTimer": "Simple Timer"
+}
+
+WEB_DIRECTORY = "./js"
+
+__all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS', 'WEB_DIRECTORY']
 
 # 2. Map the class so ComfyUI populates it in the menu
 NODE_CLASS_MAPPINGS = {
